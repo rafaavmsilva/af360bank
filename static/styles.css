@@ -4,6 +4,29 @@
     box-sizing: border-box;
 }
 
+@keyframes logoEntrance {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes logoPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -17,6 +40,25 @@ body {
 .container {
     text-align: center;
     padding: 2rem;
+}
+
+.logo-container {
+    margin-bottom: 2rem;
+    position: relative;
+    display: inline-block;
+}
+
+.logo {
+    max-width: 200px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+    animation: logoEntrance 1s ease-out forwards,
+               logoPulse 3s ease-in-out infinite;
+    transition: filter 0.3s ease;
+}
+
+.logo:hover {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
 }
 
 h1 {

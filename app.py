@@ -9,9 +9,9 @@ def index():
 @app.route('/redirect/<project>')
 def redirect_to_subdomain(project):
     if project == 'comissoes':
-        return redirect('https://comissoes.af360bank.online')
+        return redirect('https://sistema-de-comissoes.onrender.com/')
     elif project == 'financeiro':
-        return redirect('https://financeiro.af360bank.online')
+        return redirect('https://projeto-financeiro.onrender.com/')
     return redirect('/')
 
 if __name__ == '__main__':

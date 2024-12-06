@@ -23,20 +23,15 @@ import sys
 comissoes_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Comissoes.af360bank')
 sys.path.append(comissoes_path)
 
-# Import the Comissoes.af360bank application
-from app import app as comissoes_app
+# Import the Comissoes.af360bank blueprint
+from app import app as comissoes_blueprint
 
 # Configure blueprint paths
-comissoes_blueprint.template_folder = os.path.join('Comissoes', 'templates')
-comissoes_blueprint.static_folder = os.path.join('Comissoes', 'static')
+comissoes_blueprint.static_folder = os.path.join('Comissoes.af360bank', 'static')
+comissoes_blueprint.template_folder = os.path.join('Comissoes.af360bank', 'templates')
 
 financeiro_blueprint.template_folder = os.path.join('financeiro', 'templates')
 financeiro_blueprint.static_folder = os.path.join('financeiro', 'static')
-
-@app.route('/comissoes', defaults={'path': ''})
-@app.route('/comissoes/<path:path>')
-def proxy_to_comissoes(path):
-    return comissoes_app.handle_request()
 
 # Register blueprints
 app.register_blueprint(comissoes_blueprint, url_prefix='/comissoes')

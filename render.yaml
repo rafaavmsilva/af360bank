@@ -11,5 +11,8 @@ services:
         value: production
       - key: FLASK_SECRET_KEY
         generateValue: true
+    domains:
+      - name: af360bank.onrender.com
+      - name: comissoes.af360bank.onrender.com
     healthCheckPath: /
     autoDeploy: true

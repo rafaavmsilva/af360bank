@@ -18,11 +18,11 @@ from Comissoes.routes import comissoes_blueprint
 from financeiro.routes import financeiro_blueprint
 
 # Configure blueprint paths
-comissoes_blueprint.template_folder = os.path.join('Comissoes.af360bank', 'templates')
-comissoes_blueprint.static_folder = os.path.join('Comissoes.af360bank', 'static')
+comissoes_blueprint.template_folder = os.path.join('Comissoes', 'templates')
+comissoes_blueprint.static_folder = os.path.join('Comissoes', 'static')
 
-financeiro_blueprint.template_folder = os.path.join('financeiro.af360bank', 'templates')
-financeiro_blueprint.static_folder = os.path.join('financeiro.af360bank', 'static')
+financeiro_blueprint.template_folder = os.path.join('financeiro', 'templates')
+financeiro_blueprint.static_folder = os.path.join('financeiro', 'static')
 
 # Register blueprints
 app.register_blueprint(comissoes_blueprint, url_prefix='/comissoes')

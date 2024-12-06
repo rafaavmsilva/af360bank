@@ -15,7 +15,7 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
 
 # Import blueprints
-from Comissoes.routes import comissoes_blueprint
+from Comissoes import comissoes_blueprint
 from financeiro.routes import financeiro_blueprint
 
 # Configure blueprint paths

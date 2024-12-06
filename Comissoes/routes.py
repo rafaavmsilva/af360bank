@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template
-
-comissoes_blueprint = Blueprint('comissoes', __name__)
+from flask import render_template
+from . import comissoes_blueprint
 
 @comissoes_blueprint.route('/')
 def index():

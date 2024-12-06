@@ -11,11 +11,5 @@ services:
         value: production
       - key: FLASK_SECRET_KEY
         generateValue: true
-    domains:
-      - name: af360bank.onrender.com
-        type: primary
-      - name: comissoes.af360bank.onrender.com
-        type: custom
-        https: true
     healthCheckPath: /
     autoDeploy: true

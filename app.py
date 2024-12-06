@@ -13,10 +13,6 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development_key')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
 
-# Configure server name for subdomain routing
-app.config['SERVER_NAME'] = 'af360bank.onrender.com'
-app.config['PREFERRED_URL_SCHEME'] = 'https'
-
 # Import blueprints using direct path imports
 from Comissoes.routes import comissoes_blueprint
 from financeiro.routes import financeiro_blueprint
@@ -28,8 +24,8 @@ comissoes_blueprint.static_folder = os.path.join('Comissoes', 'static')
 financeiro_blueprint.template_folder = os.path.join('financeiro', 'templates')
 financeiro_blueprint.static_folder = os.path.join('financeiro', 'static')
 
-# Register blueprints with proper subdomain configuration
-app.register_blueprint(comissoes_blueprint, subdomain='comissoes', url_prefix='/')
+# Register blueprints with URL prefixes
+app.register_blueprint(comissoes_blueprint, url_prefix='/comissoes')
 app.register_blueprint(financeiro_blueprint, url_prefix='/financeiro')
 
 @app.route('/')

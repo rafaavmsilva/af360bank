@@ -1,9 +1,24 @@
 services:
   - type: web
-    name: af360bank
+    name: comissoes-af360bank
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn wsgi:app
+    startCommand: gunicorn "Comissoes.wsgi:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+    healthCheckPath: /
+    autoDeploy: true
+
+  - type: web
+    name: financeiro-af360bank
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn "financeiro.wsgi:app"
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0

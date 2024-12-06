@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect
 import os
 import sys
+import subprocess
 
 # Add the project root to Python path
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +32,22 @@ app.register_blueprint(financeiro_blueprint, url_prefix='/financeiro')
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/redirect/comissoes')
+def redirect_comissoes():
+    # Start the Comissoes app if it's not already running
+    comissoes_app_path = os.path.join(project_root, 'Comissoes.af360bank', 'run.py')
+    try:
+        subprocess.Popen([sys.executable, comissoes_app_path], 
+                        cwd=os.path.dirname(comissoes_app_path))
+    except Exception as e:
+        print(f"Error starting Comissoes app: {e}")
+    
+    return redirect('http://127.0.0.1:5001/')
+
+@app.route('/redirect/financeiro')
+def redirect_financeiro():
+    return redirect('/financeiro')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

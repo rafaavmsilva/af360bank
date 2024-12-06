@@ -14,22 +14,18 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
 
 # Import blueprints using direct path imports
-comissoes_path = os.path.join(project_root, 'Comissoes.af360bank')
-financeiro_path = os.path.join(project_root, 'financeiro.af360bank')
-sys.path.insert(0, comissoes_path)
-sys.path.insert(0, financeiro_path)
-
-# Import the blueprint apps
-from app import app as comissoes_blueprint
-from app import app as financeiro_blueprint
+from Comissoes.routes import comissoes_blueprint
+from financeiro.routes import financeiro_blueprint
 
 # Configure blueprint paths
 comissoes_blueprint.template_folder = os.path.join('Comissoes.af360bank', 'templates')
 comissoes_blueprint.static_folder = os.path.join('Comissoes.af360bank', 'static')
-app.register_blueprint(comissoes_blueprint, url_prefix='/comissoes')
 
 financeiro_blueprint.template_folder = os.path.join('financeiro.af360bank', 'templates')
 financeiro_blueprint.static_folder = os.path.join('financeiro.af360bank', 'static')
+
+# Register blueprints
+app.register_blueprint(comissoes_blueprint, url_prefix='/comissoes')
 app.register_blueprint(financeiro_blueprint, url_prefix='/financeiro')
 
 @app.route('/')

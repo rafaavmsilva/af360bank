@@ -13,22 +13,13 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development_key')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
 
-# Import blueprints using direct path imports
+# Import blueprints
 from Comissoes.routes import comissoes_blueprint
 from financeiro.routes import financeiro_blueprint
-import os
-import sys
-
-# Add Comissoes.af360bank to Python path
-comissoes_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Comissoes.af360bank')
-sys.path.append(comissoes_path)
-
-# Import the Comissoes.af360bank blueprint
-from app import app as comissoes_blueprint
 
 # Configure blueprint paths
-comissoes_blueprint.static_folder = os.path.join('Comissoes.af360bank', 'static')
-comissoes_blueprint.template_folder = os.path.join('Comissoes.af360bank', 'templates')
+comissoes_blueprint.static_folder = os.path.join('Comissoes', 'static')
+comissoes_blueprint.template_folder = os.path.join('Comissoes', 'templates')
 
 financeiro_blueprint.template_folder = os.path.join('financeiro', 'templates')
 financeiro_blueprint.static_folder = os.path.join('financeiro', 'static')

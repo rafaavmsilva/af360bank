@@ -36,7 +36,7 @@ def index():
 @app.route('/redirect/comissoes')
 def redirect_comissoes():
     # Start the Comissoes app if it's not already running
-    comissoes_app_path = os.path.join(project_root, 'Comissoes.af360bank', 'run.py')
+    comissoes_app_path = os.path.join(project_root, 'Comissoes.af360bank', 'main.py')
     try:
         subprocess.Popen([sys.executable, comissoes_app_path], 
                         cwd=os.path.dirname(comissoes_app_path))

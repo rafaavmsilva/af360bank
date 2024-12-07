@@ -65,7 +65,33 @@ def redirect_comissoes():
 
 @app.route('/redirect/financeiro')
 def redirect_financeiro():
-    return redirect('/financeiro')
+    """Start and redirect to the financeiro module."""
+    financeiro_app_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'financeiro.af360bank', 'run.py')
+    try:
+        # Start the Financeiro app in a new window
+        process = subprocess.Popen(
+            [sys.executable, financeiro_app_path],
+            cwd=os.path.dirname(financeiro_app_path),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            creationflags=subprocess.CREATE_NEW_CONSOLE
+        )
+        
+        # Wait a moment for the app to start
+        time.sleep(3)
+        
+        # Check if process started successfully
+        if process.poll() is None:  # Process is still running
+            return redirect('http://127.0.0.1:5002/')
+        else:
+            # Process failed to start
+            out, err = process.communicate()
+            print(f"Error starting Financeiro app: {err.decode()}")
+            return "Failed to start Financeiro app. Please check the console for errors.", 500
+            
+    except Exception as e:
+        print(f"Error starting Financeiro app: {e}")
+        return f"Error: {str(e)}", 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

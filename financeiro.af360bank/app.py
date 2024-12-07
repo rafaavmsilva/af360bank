@@ -13,12 +13,11 @@ from requests.packages.urllib3.util.retry import Retry
 import uuid
 import threading
 
+UPLOAD_FOLDER = 'uploads'
+
 app = Blueprint('financeiro', __name__,
                 template_folder='templates',
                 static_folder='static')
-
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['UPLOAD_FOLDER'] = 'uploads'
 
 # Ensure the upload and instance folders exist
 for folder in ['instance', 'uploads']:
@@ -126,17 +125,17 @@ def index():
 @rate_limit()
 def upload_file():
     if 'file' not in request.files:
-        flash('Nenhum arquivo selecionado')
-        return redirect(url_for('index'))
+        flash('Nenhum arquivo selecionado', 'error')
+        return redirect(url_for('financeiro.index'))
     
     file = request.files['file']
     if file.filename == '':
-        flash('Nenhum arquivo selecionado')
-        return redirect(url_for('index'))
+        flash('Nenhum arquivo selecionado', 'error')
+        return redirect(url_for('financeiro.index'))
     
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
         
         # Salva o arquivo
         file.save(filepath)
@@ -160,8 +159,8 @@ def upload_file():
             'message': 'Arquivo enviado e sendo processado'
         })
     
-    flash('Tipo de arquivo não permitido')
-    return redirect(url_for('index'))
+    flash('Arquivo não permitido', 'error')
+    return redirect(url_for('financeiro.index'))
 
 def find_matching_column(df, column_names):
     for col in df.columns:

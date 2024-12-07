@@ -25,7 +25,7 @@
                     <div id="alertMessage" class="alert" style="display: none;" role="alert"></div>
                     
                     <!-- Form de upload -->
-                    <form id="uploadForm" action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+                    <form id="uploadForm" action="{{ url_for('financeiro.upload_file') }}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="file" class="form-label">Selecione o arquivo Excel</label>
                             <input type="file" class="form-control" id="file" name="file" accept=".xls,.xlsx">
@@ -55,7 +55,7 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     alertDiv.style.display = 'none';
     
     // Envia o arquivo
-    fetch('{{ url_for("upload_file") }}', {
+    fetch('{{ url_for("financeiro.upload_file") }}', {
         method: 'POST',
         body: formData
     })
@@ -93,7 +93,7 @@ function checkProgress(processId) {
             
             if (data.status === 'completed') {
                 showSuccess('Arquivo processado com sucesso!');
-                setTimeout(() => window.location.href = '{{ url_for("recebidos") }}', 1000);
+                setTimeout(() => window.location.href = '{{ url_for("financeiro.recebidos") }}', 1000);
             } else if (data.status === 'error') {
                 showError(data.message);
             } else {

@@ -33,22 +33,22 @@
             </div>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link {{ 'active' if active_page == 'index' }}" href="{{ url_for('index') }}">
-                        <i class="fas fa-upload"></i> Upload
+                    <a class="nav-link {{ 'active' if active_page == 'index' }}" href="{{ url_for('financeiro.index') }}">
+                        <i class="fas fa-home"></i> Home
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ 'active' if active_page == 'recebidos' }}" href="{{ url_for('recebidos') }}">
+                    <a class="nav-link {{ 'active' if active_page == 'recebidos' }}" href="{{ url_for('financeiro.recebidos') }}">
                         <i class="fas fa-money-bill-wave"></i> Recebidos
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ 'active' if active_page == 'transactions_summary' }}" href="{{ url_for('transactions_summary') }}">
-                        <i class="fas fa-list"></i> Resumo de Transações
+                    <a class="nav-link {{ 'active' if active_page == 'transactions_summary' }}" href="{{ url_for('financeiro.transactions_summary') }}">
+                        <i class="fas fa-chart-bar"></i> Resumo
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ 'active' if active_page == 'cnpj_verification' }}" href="{{ url_for('cnpj_verification') }}">
+                    <a class="nav-link {{ 'active' if active_page == 'cnpj_verification' }}" href="{{ url_for('financeiro.cnpj_verification') }}">
                         <i class="fas fa-building"></i> Consulta CNPJ
                     </a>
                 </li>

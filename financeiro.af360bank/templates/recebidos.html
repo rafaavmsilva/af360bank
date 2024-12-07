@@ -37,19 +37,19 @@
     <div class="row mb-3">
         <div class="col">
             <div class="btn-group" role="group" aria-label="Filtro de transações">
-                <a href="{{ url_for('recebidos', tipo='todos') }}" 
+                <a href="{{ url_for('financeiro.recebidos', tipo='todos') }}" 
                    class="btn btn-outline-primary {% if tipo_filtro == 'todos' %}active{% endif %}">
                     Todos
                 </a>
-                <a href="{{ url_for('recebidos', tipo='PIX RECEBIDO') }}" 
+                <a href="{{ url_for('financeiro.recebidos', tipo='PIX RECEBIDO') }}" 
                    class="btn btn-outline-success {% if tipo_filtro == 'PIX RECEBIDO' %}active{% endif %}">
                     PIX
                 </a>
-                <a href="{{ url_for('recebidos', tipo='TED RECEBIDA') }}" 
+                <a href="{{ url_for('financeiro.recebidos', tipo='TED RECEBIDA') }}" 
                    class="btn btn-outline-info {% if tipo_filtro == 'TED RECEBIDA' %}active{% endif %}">
                     TED
                 </a>
-                <a href="{{ url_for('recebidos', tipo='PAGAMENTO') }}" 
+                <a href="{{ url_for('financeiro.recebidos', tipo='PAGAMENTO') }}" 
                    class="btn btn-outline-warning {% if tipo_filtro == 'PAGAMENTO' %}active{% endif %}">
                     Pagamentos
                 </a>
@@ -94,7 +94,7 @@ document.getElementById('retryButton')?.addEventListener('click', function() {
     this.disabled = true;
     this.textContent = 'Tentando...';
     
-    fetch('/retry_failed_cnpjs')
+    fetch('/financeiro/retry_failed_cnpjs')
         .then(response => response.json())
         .then(data => {
             if (data.success) {

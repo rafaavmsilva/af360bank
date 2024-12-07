@@ -36,32 +36,47 @@ def index():
 
 @app.route('/redirect/comissoes')
 def redirect_comissoes():
-    comissoes_app_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Comissoes.af360bank', 'app.py')
-    try:
-        # Start the Comissoes app in a new window
-        process = subprocess.Popen(
-            [sys.executable, comissoes_app_path],
-            cwd=os.path.dirname(comissoes_app_path),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            creationflags=subprocess.CREATE_NEW_CONSOLE
-        )
-        
-        # Wait a moment for the app to start
-        time.sleep(3)
-        
-        # Check if process started successfully
-        if process.poll() is None:  # Process is still running
-            return redirect('http://127.0.0.1:5001/')
-        else:
-            # Process failed to start
-            out, err = process.communicate()
-            print(f"Error starting Comissoes app: {err.decode()}")
-            return "Failed to start Comissoes app. Please check the console for errors.", 500
+    """Start and redirect to the comissoes module."""
+    # Check if we're in production (Render) or local development
+    if os.environ.get('RENDER'):
+        # In production, just redirect to the comissoes port
+        return redirect('http://127.0.0.1:5001/')
+    else:
+        # In local development, start the app
+        comissoes_app_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Comissoes.af360bank', 'app.py')
+        try:
+            # Start the Comissoes app in a new window
+            if os.name == 'nt':  # Windows
+                process = subprocess.Popen(
+                    [sys.executable, comissoes_app_path],
+                    cwd=os.path.dirname(comissoes_app_path),
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    creationflags=subprocess.CREATE_NEW_CONSOLE
+                )
+            else:  # Linux/Unix
+                process = subprocess.Popen(
+                    [sys.executable, comissoes_app_path],
+                    cwd=os.path.dirname(comissoes_app_path),
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
             
-    except Exception as e:
-        print(f"Error starting Comissoes app: {e}")
-        return f"Error: {str(e)}", 500
+            # Wait a moment for the app to start
+            time.sleep(3)
+            
+            # Check if process started successfully
+            if process.poll() is None:  # Process is still running
+                return redirect('http://127.0.0.1:5001/')
+            else:
+                # Process failed to start
+                out, err = process.communicate()
+                print(f"Error starting Comissoes app: {err.decode()}")
+                return "Failed to start Comissoes app. Please check the console for errors.", 500
+                
+        except Exception as e:
+            print(f"Error starting Comissoes app: {e}")
+            return f"Error: {str(e)}", 500
 
 @app.route('/redirect/financeiro')
 def redirect_financeiro():

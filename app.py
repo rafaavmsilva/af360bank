@@ -36,23 +36,32 @@ def index():
 
 @app.route('/redirect/comissoes')
 def redirect_comissoes():
-    # Start the Comissoes app if it's not already running
     comissoes_app_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Comissoes.af360bank', 'app.py')
     try:
-        # Kill any existing Python processes running on port 5001
-        subprocess.run(['taskkill', '/F', '/IM', 'python.exe'], capture_output=True, text=True)
-        
-        # Start the Comissoes app
-        subprocess.Popen([sys.executable, comissoes_app_path], 
-                        cwd=os.path.dirname(comissoes_app_path),
-                        creationflags=subprocess.CREATE_NEW_CONSOLE)
+        # Start the Comissoes app in a new window
+        process = subprocess.Popen(
+            [sys.executable, comissoes_app_path],
+            cwd=os.path.dirname(comissoes_app_path),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            creationflags=subprocess.CREATE_NEW_CONSOLE
+        )
         
         # Wait a moment for the app to start
-        time.sleep(2)
+        time.sleep(3)
+        
+        # Check if process started successfully
+        if process.poll() is None:  # Process is still running
+            return redirect('http://127.0.0.1:5001/')
+        else:
+            # Process failed to start
+            out, err = process.communicate()
+            print(f"Error starting Comissoes app: {err.decode()}")
+            return "Failed to start Comissoes app. Please check the console for errors.", 500
+            
     except Exception as e:
         print(f"Error starting Comissoes app: {e}")
-    
-    return redirect('http://127.0.0.1:5001/')
+        return f"Error: {str(e)}", 500
 
 @app.route('/redirect/financeiro')
 def redirect_financeiro():

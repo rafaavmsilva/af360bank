@@ -993,4 +993,9 @@ def print_comissoes():
         return redirect(url_for('comissoes'))
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5001, debug=True)
+    print("Starting Comissoes app on http://127.0.0.1:5001/")
+    try:
+        app.run(host='127.0.0.1', port=5001, debug=True)
+    except Exception as e:
+        print(f"Error starting Comissoes app: {e}")
+        input("Press Enter to exit...")

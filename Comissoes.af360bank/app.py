@@ -974,3 +974,20 @@ def print_comissoes():
         app.logger.error(f'Erro detalhado na rota /print_comissoes: {str(e)}', exc_info=True)
         flash(f'Ocorreu um erro ao gerar a visualização de impressão: {str(e)}', 'error')
         return redirect(url_for('comissoes'))
+
+if __name__ == '__main__':
+    # Convert Blueprint to Flask app if necessary
+    if isinstance(app, Blueprint):
+        flask_app = Flask(__name__)
+        flask_app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development_key')
+        flask_app.config.update(
+            SESSION_TYPE='filesystem',
+            SESSION_COOKIE_SECURE=False,
+            SESSION_COOKIE_HTTPONLY=True,
+            SESSION_COOKIE_SAMESITE='Lax',
+        )
+        Session(flask_app)
+        flask_app.register_blueprint(app)
+        app = flask_app
+    
+    app.run(host='127.0.0.1', port=5001, debug=True)

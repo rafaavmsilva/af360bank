@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 import pandas as pd
 from decimal import Decimal, InvalidOperation
 from typing import Dict, List, Optional
@@ -37,8 +37,25 @@ import os
 import numpy as np
 from PIL import Image, ImageEnhance
 import cv2
+from datetime import datetime
 
-app = Blueprint('comissoes', __name__, 
+# Initialize Flask app
+if __name__ == '__main__':
+    app = Flask(__name__)
+    app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development_key')
+
+    # Configure session and app
+    app.config.update(
+        SESSION_TYPE='filesystem',
+        SESSION_COOKIE_SECURE=False,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax',
+    )
+
+    # Initialize Flask-Session
+    Session(app)
+else:
+    app = Blueprint('comissoes', __name__, 
                 template_folder='templates',
                 static_folder='static')
 
@@ -976,18 +993,4 @@ def print_comissoes():
         return redirect(url_for('comissoes'))
 
 if __name__ == '__main__':
-    # Convert Blueprint to Flask app if necessary
-    if isinstance(app, Blueprint):
-        flask_app = Flask(__name__)
-        flask_app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development_key')
-        flask_app.config.update(
-            SESSION_TYPE='filesystem',
-            SESSION_COOKIE_SECURE=False,
-            SESSION_COOKIE_HTTPONLY=True,
-            SESSION_COOKIE_SAMESITE='Lax',
-        )
-        Session(flask_app)
-        flask_app.register_blueprint(app)
-        app = flask_app
-    
     app.run(host='127.0.0.1', port=5001, debug=True)

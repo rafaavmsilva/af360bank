@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect
 import os
 import sys
 import subprocess
+import time
 
 # Add the project root to Python path
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -36,10 +37,18 @@ def index():
 @app.route('/redirect/comissoes')
 def redirect_comissoes():
     # Start the Comissoes app if it's not already running
-    comissoes_app_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Comissoes.af360bank', 'main.py')
+    comissoes_app_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Comissoes.af360bank', 'app.py')
     try:
+        # Kill any existing Python processes running on port 5001
+        subprocess.run(['taskkill', '/F', '/IM', 'python.exe'], capture_output=True, text=True)
+        
+        # Start the Comissoes app
         subprocess.Popen([sys.executable, comissoes_app_path], 
-                        cwd=os.path.dirname(comissoes_app_path))
+                        cwd=os.path.dirname(comissoes_app_path),
+                        creationflags=subprocess.CREATE_NEW_CONSOLE)
+        
+        # Wait a moment for the app to start
+        time.sleep(2)
     except Exception as e:
         print(f"Error starting Comissoes app: {e}")
     

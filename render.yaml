@@ -3,9 +3,13 @@ services:
     name: af360bank
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python wsgi.py
+    startCommand: gunicorn wsgi:app
     envVars:
       - key: FLASK_SECRET_KEY
         generateValue: true
       - key: RENDER
         value: true
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHONPATH
+        value: .

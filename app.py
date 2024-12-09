@@ -1,8 +1,7 @@
 from flask import Flask, render_template, redirect, url_for
 import os
 import sys
-import subprocess
-import time
+from flask_session import Session
 
 # Add the project root to Python path
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -14,17 +13,18 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development_key')
 # Configure session
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
+Session(app)
 
 # Import blueprints
-from Comissoes import comissoes_blueprint
-from financeiro.routes import financeiro_blueprint
+from Comissoes.af360bank.app import app as comissoes_blueprint
+from financeiro.af360bank.app import app as financeiro_blueprint
 
 # Configure blueprint paths
-comissoes_blueprint.static_folder = os.path.join('Comissoes', 'static')
-comissoes_blueprint.template_folder = os.path.join('Comissoes', 'templates')
+comissoes_blueprint.static_folder = os.path.join('Comissoes.af360bank', 'static')
+comissoes_blueprint.template_folder = os.path.join('Comissoes.af360bank', 'templates')
 
-financeiro_blueprint.template_folder = os.path.join('financeiro', 'templates')
-financeiro_blueprint.static_folder = os.path.join('financeiro', 'static')
+financeiro_blueprint.template_folder = os.path.join('financeiro.af360bank', 'templates')
+financeiro_blueprint.static_folder = os.path.join('financeiro.af360bank', 'static')
 
 # Register blueprints
 app.register_blueprint(comissoes_blueprint, url_prefix='/comissoes')

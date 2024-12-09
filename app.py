@@ -10,12 +10,23 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development_key')
 
-# Configure session
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
+# Configure session and app
+app.config.update(
+    SESSION_TYPE='filesystem',
+    SESSION_COOKIE_SECURE=False,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=1800,  # 30 minutes
+    SESSION_REFRESH_EACH_REQUEST=True,
+    MAX_CONTENT_LENGTH=16 * 1024 * 1024,  # 16MB max file size
+    STATIC_FOLDER='static',
+    TEMPLATE_FOLDER='templates'
+)
+
+# Initialize Flask-Session
 Session(app)
 
-# Function to import module from file path
+# Function to import module from file
 def import_module_from_file(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     module = importlib.util.module_from_spec(spec)
@@ -32,11 +43,6 @@ financeiro_module = import_module_from_file('financeiro_module', financeiro_path
 
 comissoes_blueprint = comissoes_module.app
 financeiro_blueprint = financeiro_module.app
-
-# Configure blueprint paths
-for blueprint in [comissoes_blueprint, financeiro_blueprint]:
-    blueprint.static_folder = 'static'
-    blueprint.template_folder = 'templates'
 
 # Register blueprints
 app.register_blueprint(comissoes_blueprint, url_prefix='/comissoes')

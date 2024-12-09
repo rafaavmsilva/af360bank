@@ -29,32 +29,60 @@ def create_app():
     def configure_module(module):
         """Configure a module with app context and session"""
         if hasattr(module, 'configure'):
-            return module.configure(app)
+            with app.app_context():
+                return module.configure(app)
         return None
 
     def import_module_from_file(module_name, file_path):
         """Import module from file"""
-        spec = importlib.util.spec_from_file_location(module_name, file_path)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[module_name] = module
-        spec.loader.exec_module(module)
-        return module
+        if not os.path.exists(file_path):
+            print(f"Warning: Module file not found: {file_path}")
+            return None
+            
+        try:
+            spec = importlib.util.spec_from_file_location(module_name, file_path)
+            if spec is None:
+                print(f"Warning: Could not create spec for module: {module_name}")
+                return None
+                
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[module_name] = module
+            spec.loader.exec_module(module)
+            return module
+        except Exception as e:
+            print(f"Error importing module {module_name}: {str(e)}")
+            return None
 
     # Import blueprints
     comissoes_path = os.path.join(project_root, 'Comissoes.af360bank', 'app.py')
     financeiro_path = os.path.join(project_root, 'financeiro.af360bank', 'app.py')
 
+    print(f"Loading Comissoes module from: {comissoes_path}")
     comissoes = import_module_from_file('comissoes', comissoes_path)
+    
+    print(f"Loading Financeiro module from: {financeiro_path}")
     financeiro = import_module_from_file('financeiro', financeiro_path)
 
     # Configure and register blueprints
-    comissoes_bp = configure_module(comissoes)
-    financeiro_bp = configure_module(financeiro)
+    if comissoes:
+        comissoes_bp = configure_module(comissoes)
+        if comissoes_bp:
+            print("Registering Comissoes blueprint")
+            app.register_blueprint(comissoes_bp, url_prefix='/comissoes')
+        else:
+            print("Warning: Could not configure Comissoes blueprint")
+    else:
+        print("Warning: Could not import Comissoes module")
 
-    if comissoes_bp:
-        app.register_blueprint(comissoes_bp, url_prefix='/comissoes')
-    if financeiro_bp:
-        app.register_blueprint(financeiro_bp, url_prefix='/financeiro')
+    if financeiro:
+        financeiro_bp = configure_module(financeiro)
+        if financeiro_bp:
+            print("Registering Financeiro blueprint")
+            app.register_blueprint(financeiro_bp, url_prefix='/financeiro')
+        else:
+            print("Warning: Could not configure Financeiro blueprint")
+    else:
+        print("Warning: Could not import Financeiro module")
 
     @app.route('/')
     def index():

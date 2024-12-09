@@ -9,6 +9,7 @@ PyMuPDF
 selenium
 fpdf
 xhtml2pdf
+imgkit==1.2.3
 opencv-python
 requests
 numpy

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, Blueprint
+from flask import Flask, render_template, redirect, url_for, Blueprint, current_app
 import os
 import sys
 from flask_session import Session
@@ -26,6 +26,13 @@ app.config.update(
 # Initialize Flask-Session
 Session(app)
 
+def configure_module(module):
+    """Configure a module with app context and session"""
+    if hasattr(module, 'configure'):
+        with app.app_context():
+            module.configure(app)
+    return module.app
+
 # Function to import module from file
 def import_module_from_file(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -41,8 +48,8 @@ financeiro_path = os.path.join(project_root, 'financeiro.af360bank', 'app.py')
 comissoes_module = import_module_from_file('comissoes_module', comissoes_path)
 financeiro_module = import_module_from_file('financeiro_module', financeiro_path)
 
-comissoes_blueprint = comissoes_module.app
-financeiro_blueprint = financeiro_module.app
+comissoes_blueprint = configure_module(comissoes_module)
+financeiro_blueprint = configure_module(financeiro_module)
 
 # Register blueprints
 app.register_blueprint(comissoes_blueprint, url_prefix='/comissoes')

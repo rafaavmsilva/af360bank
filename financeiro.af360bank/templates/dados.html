@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col">
+            <h2>Dados Processados</h2>
+            
+            {% if dados %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            {% for coluna in dados[0].keys() %}
+                            <th>{{ coluna }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for linha in dados %}
+                        <tr>
+                            {% for valor in linha.values() %}
+                            <td>{{ valor }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Nenhum dado processado ainda.
+                <a href="{{ url_for('financeiro.index') }}" class="btn btn-primary">Voltar para Upload</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,7 +4,14 @@ import sqlite3
 import os
 import pandas as pd
 from werkzeug.utils import secure_filename
-from .read_excel import process_excel_file
+import sys
+
+# Add the current directory to Python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
+
+from read_excel import process_excel_file
 from functools import wraps
 import time
 import requests

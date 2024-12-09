@@ -11,5 +11,3 @@ services:
         value: true
       - key: FLASK_ENV
         value: production
-      - key: PYTHONPATH
-        value: .:Comissoes.af360bank:financeiro.af360bank

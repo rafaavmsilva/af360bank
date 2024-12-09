@@ -1,17 +1,4 @@
 Flask==2.3.3
 Werkzeug==2.3.7
 gunicorn==21.2.0
-pandas
-pillow
-reportlab
-pdfkit
-PyMuPDF
-selenium
-fpdf
-xhtml2pdf
-imgkit==1.2.3
-opencv-python
-requests
-numpy
-waitress
 flask-session

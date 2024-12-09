@@ -24,26 +24,17 @@ def configure(main_app):
     return app
 
 # Ensure session is initialized with required data structures
-def before_request():
+def init_session():
     if 'dados' not in session:
         session['dados'] = []
     if 'comissoes' not in session:
         session['comissoes'] = []
-    if 'tabela_config' not in session:
-        session['tabela_config'] = {}
-
-# Set default commission configurations
-def set_default_commission_config():
     if 'tabela_config' not in session:
         session['tabela_config'] = {
             'tabela1': {'tipo': 'porcentagem', 'faixas': []},
             'tabela2': {'tipo': 'porcentagem', 'faixas': []},
             'tabela3': {'tipo': 'fixo', 'faixas': []}
         }
-
-# Initialize data
-before_request()
-set_default_commission_config()
 
 def is_valid_file(filename: str) -> bool:
     """Validate if the file is a CSV or Excel file."""
@@ -80,11 +71,13 @@ def format_currency(value: any) -> str:
 @app.route('/')
 def index():
     """Handle the main page and file upload."""
+    init_session()
     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload():
     """Handle file upload."""
+    init_session()
     if 'file' not in request.files:
         flash('Nenhum arquivo selecionado')
         return redirect(url_for('comissoes.index'))
@@ -110,6 +103,7 @@ def upload():
 @app.route('/dados')
 def dados():
     """Display uploaded data."""
+    init_session()
     if 'dados' not in session or not session['dados']:
         flash('Nenhum dado carregado')
         return redirect(url_for('comissoes.index'))
@@ -118,6 +112,7 @@ def dados():
 @app.route('/comissoes')
 def comissoes():
     """Calculate and display commissions."""
+    init_session()
     if 'dados' not in session or not session['dados']:
         flash('Nenhum dado carregado')
         return redirect(url_for('comissoes.index'))

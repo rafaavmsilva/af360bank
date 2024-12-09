@@ -25,7 +25,7 @@
                     <div id="alertMessage" class="alert" style="display: none;" role="alert"></div>
                     
                     <!-- Form de upload -->
-                    <form id="uploadForm" action="{{ url_for('financeiro.upload_file') }}" method="post" enctype="multipart/form-data">
+                    <form id="uploadForm" action="{{ url_for('financeiro.upload') }}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="file" class="form-label">Selecione o arquivo Excel</label>
                             <input type="file" class="form-control" id="file" name="file" accept=".xls,.xlsx">
@@ -49,71 +49,74 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     const alertDiv = document.getElementById('alertMessage');
     const submitButton = this.querySelector('button[type="submit"]');
     
-    // Mostra barra de progresso e desabilita botão
+    // Mostrar barra de progresso e desabilitar botão
     progressDiv.style.display = 'block';
     submitButton.disabled = true;
-    alertDiv.style.display = 'none';
     
-    // Envia o arquivo
-    fetch('{{ url_for("financeiro.upload_file") }}', {
+    fetch(this.action, {
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Inicia polling do progresso
-            const processId = data.process_id;
-            checkProgress(processId);
+            showSuccess('Arquivo enviado com sucesso!');
+            if (data.processId) {
+                checkProgress(data.processId);
+            }
         } else {
-            showError('Erro ao enviar arquivo: ' + data.message);
+            showError(data.message || 'Erro ao enviar arquivo');
+            submitButton.disabled = false;
         }
     })
     .catch(error => {
-        showError('Erro ao enviar arquivo: ' + error);
+        showError('Erro ao enviar arquivo: ' + error.message);
+        submitButton.disabled = false;
     });
 });
 
 function checkProgress(processId) {
     const progressBar = document.querySelector('.progress-bar');
     const progressMessage = document.getElementById('progressMessage');
-    
-    fetch(`/upload_progress/${processId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                showError('Erro: ' + data.error);
-                return;
-            }
-            
-            const percent = data.total > 0 ? Math.round((data.current / data.total) * 100) : 0;
-            progressBar.style.width = `${percent}%`;
-            progressBar.textContent = `${percent}%`;
-            progressMessage.textContent = data.message;
-            
-            if (data.status === 'completed') {
-                showSuccess('Arquivo processado com sucesso!');
-                setTimeout(() => window.location.href = '{{ url_for("financeiro.recebidos") }}', 1000);
-            } else if (data.status === 'error') {
-                showError(data.message);
-            } else {
-                // Continua verificando o progresso
-                setTimeout(() => checkProgress(processId), 500);
-            }
-        })
-        .catch(error => {
-            showError('Erro ao verificar progresso: ' + error);
-        });
+    const submitButton = document.querySelector('button[type="submit"]');
+
+    fetch(`/financeiro/progress/${processId}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            showError(data.error);
+            submitButton.disabled = false;
+            return;
+        }
+
+        const progress = data.progress;
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute('aria-valuenow', progress);
+        progressBar.textContent = `${progress}%`;
+        progressMessage.textContent = data.message || 'Processando...';
+
+        if (progress < 100 && !data.error) {
+            setTimeout(() => checkProgress(processId), 1000);
+        } else if (progress === 100) {
+            showSuccess('Processamento concluído com sucesso!');
+            submitButton.disabled = false;
+            setTimeout(() => {
+                window.location.href = '/financeiro/dados';
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        showError('Erro ao verificar progresso: ' + error.message);
+        submitButton.disabled = false;
+    });
 }
 
 function showError(message) {
     const alertDiv = document.getElementById('alertMessage');
-    const submitButton = document.querySelector('button[type="submit"]');
-    
     alertDiv.className = 'alert alert-danger';
     alertDiv.textContent = message;
     alertDiv.style.display = 'block';
-    submitButton.disabled = false;
+    document.getElementById('uploadProgress').style.display = 'none';
 }
 
 function showSuccess(message) {

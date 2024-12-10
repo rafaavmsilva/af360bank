@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Verificação de Email - AF360 Bank</h2>
+        <p>Olá,</p>
+        <p>Obrigado por se registrar no AF360 Bank. Para completar seu cadastro, por favor clique no botão abaixo para verificar seu endereço de email:</p>
+        
+        <a href="{{ verification_url }}" class="button">Verificar Email</a>
+        
+        <p>Se o botão não funcionar, você pode copiar e colar o seguinte link no seu navegador:</p>
+        <p>{{ verification_url }}</p>
+        
+        <div class="footer">
+            <p>Se você não se cadastrou no AF360 Bank, por favor ignore este email.</p>
+            <p>Este é um email automático, por favor não responda.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-6">
+            <div class="text-center mb-4">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="AF360 Bank" class="logo">
+            </div>
+            <div class="card auth-card glow">
+                <div class="card-header">
+                    <h3 class="text-center mb-0">Criar Conta</h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <form method="POST" id="registerForm">
+                        <div class="form-group mb-4">
+                            <label for="email" class="form-label">Email Corporativo</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" required 
+                                       placeholder="seu.email@afcredito.com.br"
+                                       pattern=".+@afcredito\.com\.br$"
+                                       title="Please use your @afcredito.com.br email">
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label">Senha</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required
+                                       placeholder="Digite sua senha"
+                                       title="A senha deve ter pelo menos 8 caracteres, incluindo maiúsculas, minúsculas, números e caracteres especiais">
+                                <button class="btn btn-outline-light" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">
+                                A senha deve conter pelo menos 8 caracteres, incluindo maiúsculas, minúsculas, números e caracteres especiais.
+                            </small>
+                            <div class="password-requirements mt-3">
+                                <div class="requirement" id="length">
+                                    <i class="fas fa-times-circle"></i> Mínimo de 8 caracteres
+                                </div>
+                                <div class="requirement" id="uppercase">
+                                    <i class="fas fa-times-circle"></i> Uma letra maiúscula
+                                </div>
+                                <div class="requirement" id="lowercase">
+                                    <i class="fas fa-times-circle"></i> Uma letra minúscula
+                                </div>
+                                <div class="requirement" id="number">
+                                    <i class="fas fa-times-circle"></i> Um número
+                                </div>
+                                <div class="requirement" id="special">
+                                    <i class="fas fa-times-circle"></i> Um caractere especial
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary w-100 auth-btn mb-4" id="submitBtn" disabled>CRIAR CONTA</button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Já tem uma conta? <a href="{{ url_for('login') }}">Entre aqui</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const password = document.getElementById('password');
+const submitBtn = document.getElementById('submitBtn');
+const requirements = {
+    length: { regex: /.{8,}/, element: document.getElementById('length') },
+    uppercase: { regex: /[A-Z]/, element: document.getElementById('uppercase') },
+    lowercase: { regex: /[a-z]/, element: document.getElementById('lowercase') },
+    number: { regex: /[0-9]/, element: document.getElementById('number') },
+    special: { regex: /[!@#$%^&*(),.?":{}|<>]/, element: document.getElementById('special') }
+};
+
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const icon = this.querySelector('i');
+    
+    if (password.type === 'password') {
+        password.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        password.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+});
+
+password.addEventListener('input', function() {
+    let valid = true;
+    const value = this.value;
+
+    Object.keys(requirements).forEach(key => {
+        const requirement = requirements[key];
+        const meets = requirement.regex.test(value);
+        const element = requirement.element;
+        
+        if (meets) {
+            element.classList.add('valid');
+            element.classList.remove('invalid');
+            element.querySelector('i').classList.remove('fa-times-circle');
+            element.querySelector('i').classList.add('fa-check-circle');
+        } else {
+            element.classList.remove('valid');
+            element.classList.add('invalid');
+            element.querySelector('i').classList.add('fa-times-circle');
+            element.querySelector('i').classList.remove('fa-check-circle');
+            valid = false;
+        }
+    });
+
+    submitBtn.disabled = !valid;
+});
+</script>
+{% endblock %}

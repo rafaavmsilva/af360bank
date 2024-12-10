@@ -73,10 +73,11 @@ def try_send_email(subject, recipient, template):
 
 def send_verification_email(user_email, token):
     verification_url = url_for('verify_email', token=token, _external=True)
+    template = render_template('email/verify.html', verify_url=verification_url)
     return try_send_email(
-        'Verify your email',
+        'Verificação de Email - AF360 Bank',
         user_email,
-        render_template('email/verify.html', verify_url=verification_url)
+        template
     )
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -86,9 +87,19 @@ def register():
         password = request.form.get('password')
         name = request.form.get('name')
 
+        # Validate email domain
+        if not email.endswith('@afcredito.com.br'):
+            flash('Por favor, use seu email corporativo (@afcredito.com.br)')
+            return redirect(url_for('register'))
+
+        # Validate password
+        if len(password) < 8:
+            flash('A senha deve ter pelo menos 8 caracteres')
+            return redirect(url_for('register'))
+
         user = User.query.filter_by(email=email).first()
         if user:
-            flash('Email already exists')
+            flash('Este email já está registrado')
             return redirect(url_for('register'))
 
         # Create verification token
@@ -99,14 +110,17 @@ def register():
             email=email,
             password=generate_password_hash(password),
             name=name,
-            allowed_apps='af360bank,projeto-financeiro,sistema-comissoes'  # Give access to all apps by default
+            allowed_apps='af360bank'  # Start with access only to AF360 Bank
         )
         db.session.add(new_user)
         db.session.commit()
 
         # Send verification email
-        send_verification_email(email, token)
-        flash('Please check your email to verify your account')
+        success, message = send_verification_email(email, token)
+        if success:
+            flash('Por favor, verifique seu email para ativar sua conta')
+        else:
+            flash('Erro ao enviar email de verificação. Por favor, contate o suporte.')
         return redirect(url_for('login'))
 
     return render_template('register.html')

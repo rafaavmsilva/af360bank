@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Your Email - AF360 Bank</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to AF360 Bank!</h1>
+        </div>
+        
+        <p>Hello,</p>
+        
+        <p>Thank you for registering with AF360 Bank. To complete your registration and verify your email address, please click the button below:</p>
+        
+        <p style="text-align: center;">
+            <a href="{{ verification_url }}" class="button">Verify Email Address</a>
+        </p>
+        
+        <p>If the button doesn't work, you can also copy and paste this link into your browser:</p>
+        <p>{{ verification_url }}</p>
+        
+        <p>This verification link will expire in 24 hours.</p>
+        
+        <p>If you didn't create an account with AF360 Bank, please ignore this email.</p>
+        
+        <div class="footer">
+            <p>This is an automated message, please do not reply to this email.</p>
+            <p>&copy; 2024 AF360 Bank. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

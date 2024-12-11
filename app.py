@@ -222,17 +222,8 @@ def resend_verification():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out')
+    flash('You have been logged out.')
     return redirect(url_for('login'))
-
-@app.route('/redirect/<project>')
-def redirect_to_subdomain(project):
-    if project == 'comissoes':
-        return redirect('https://comissoes.af360bank.onrender.com', _external=True, _scheme='https')
-    elif project == 'financeiro':
-        return redirect('https://financeiro.af360bank.onrender.com', _external=True, _scheme='https')
-    else:
-        return redirect(url_for('index', _external=True, _scheme='https'))
 
 @app.route('/')
 @login_required

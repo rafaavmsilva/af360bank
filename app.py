@@ -17,12 +17,10 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
 
-# Initialize AuthClient with app_name
+# Initialize AuthClient with auth_server_url and app_name
 auth = AuthClient(
-    app_name="AF360Bank",
-    base_url=os.getenv('AUTH_BASE_URL'),
-    client_id=os.getenv('AUTH_CLIENT_ID'),
-    client_secret=os.getenv('AUTH_CLIENT_SECRET')
+    auth_server_url=os.getenv('AUTH_SERVER_URL', 'https://af360bank.onrender.com'),
+    app_name="AF360Bank"
 )
 
 # Database configuration

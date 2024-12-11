@@ -228,11 +228,11 @@ def logout():
 @app.route('/redirect/<project>')
 def redirect_to_subdomain(project):
     if project == 'comissoes':
-        return redirect('https://comissoes.af360bank.onrender.com')
+        return redirect('https://comissoes.af360bank.onrender.com', _external=True, _scheme='https')
     elif project == 'financeiro':
-        return redirect('https://financeiro.af360bank.onrender.com')
+        return redirect('https://financeiro.af360bank.onrender.com', _external=True, _scheme='https')
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('index', _external=True, _scheme='https'))
 
 @app.route('/')
 @login_required
@@ -259,5 +259,13 @@ def init_db():
         print(f"Error creating database tables: {str(e)}")
 
 if __name__ == '__main__':
+    # Force HTTPS
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
+    
+    # Set session cookie settings
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    
     init_db()  # Initialize the database before running the app
-    app.run(debug=True)
+    app.run(debug=True, ssl_context='adhoc')

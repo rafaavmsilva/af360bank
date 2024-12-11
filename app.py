@@ -3,10 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Mail, Message
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import os
 from dotenv import load_dotenv
 import re
+import secrets
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -103,6 +105,10 @@ def send_verification_email(user_email, token):
         flash('Verification email sent! Please check your inbox.')
     else:
         flash('Error sending verification email. Please try again later.')
+
+def generate_redirect_token(destination):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps({'destination': destination, 'timestamp': str(datetime.utcnow())})
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -224,6 +230,17 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('login'))
+
+@app.route('/redirect/<project>')
+@login_required
+def redirect_to_project(project):
+    if project == 'comissoes':
+        token = generate_redirect_token('comissoes')
+        return redirect(f'https://sistema-de-comissoes.onrender.com/auth?token={token}')
+    elif project == 'financeiro':
+        token = generate_redirect_token('financeiro')
+        return redirect(f'https://projeto-financeiro.onrender.com/auth?token={token}')
+    return redirect(url_for('index'))
 
 @app.route('/')
 @login_required

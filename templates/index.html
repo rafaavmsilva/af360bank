@@ -14,12 +14,12 @@
         </div>
         <h1>Bem-vindo ao Portal AF360 Bank</h1>
         <div class="projects">
-            <a href="https://comissoes.af360bank.onrender.com" class="project-card" target="_blank" rel="noopener noreferrer">
+            <a href="{{ url_for('redirect_to_project', project='comissoes') }}" class="project-card">
                 <div class="icon">💰</div>
                 <h2>Comissões</h2>
                 <p>Acesse o sistema de gerenciamento de comissões</p>
             </a>
-            <a href="https://financeiro.af360bank.onrender.com" class="project-card" target="_blank" rel="noopener noreferrer">
+            <a href="{{ url_for('redirect_to_project', project='financeiro') }}" class="project-card">
                 <div class="icon">📊</div>
                 <h2>Financeiro</h2>
                 <p>Acesse o sistema financeiro</p>

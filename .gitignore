@@ -11,3 +11,9 @@ venv/
 # Keep track of database schema but ignore the data
 instance/*
 !instance/.gitkeep
+
+# Flask session files
+flask_session/
+
+# Database files
+*.db

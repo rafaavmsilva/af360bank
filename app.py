@@ -251,13 +251,24 @@ def logout():
 def redirect_to_project(project):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-        
+    
+    # Get environment
+    is_local = request.host.startswith('127.0.0.1') or request.host.startswith('localhost')
+    
+    # Set base URLs based on environment
+    if is_local:
+        comissoes_url = 'http://127.0.0.1:5001'
+        financeiro_url = 'http://127.0.0.1:5002'
+    else:
+        comissoes_url = 'https://sistema-de-comissoes.onrender.com'
+        financeiro_url = 'https://projeto-financeiro.onrender.com'
+    
     if project == 'comissoes':
         token = generate_redirect_token('comissoes')
-        return redirect(f'https://sistema-de-comissoes.onrender.com/auth?token={token}')
+        return redirect(f'{comissoes_url}/auth?token={token}')
     elif project == 'financeiro':
         token = generate_redirect_token('financeiro')
-        return redirect(f'https://projeto-financeiro.onrender.com/auth?token={token}')
+        return redirect(f'{financeiro_url}/auth?token={token}')
     return redirect(url_for('index'))
 
 @app.route('/')

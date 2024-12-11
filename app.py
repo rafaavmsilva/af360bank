@@ -234,12 +234,15 @@ def logout():
 @app.route('/redirect/<project>')
 @login_required
 def redirect_to_project(project):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+        
     if project == 'comissoes':
         token = generate_redirect_token('comissoes')
         return redirect(f'https://sistema-de-comissoes.onrender.com/auth?token={token}')
     elif project == 'financeiro':
         token = generate_redirect_token('financeiro')
-        return redirect(f'https://projeto-financeiro.onrender.com/auth?token={token}')
+        return redirect(f'https://financeiro-af360bank.onrender.com/auth?token={token}')
     return redirect(url_for('index'))
 
 @app.route('/')

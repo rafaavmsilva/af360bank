@@ -109,15 +109,10 @@ def register():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
 
         # Basic validation
-        if not email or not password or not confirm_password:
+        if not email or not password:
             flash('All fields are required')
-            return redirect(url_for('register'))
-
-        if password != confirm_password:
-            flash('Passwords do not match')
             return redirect(url_for('register'))
 
         # Password validation

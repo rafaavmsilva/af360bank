@@ -115,7 +115,15 @@ def send_verification_email(user_email, token):
 
 def generate_redirect_token(destination):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-    return serializer.dumps({'destination': destination, 'timestamp': str(datetime.utcnow())})
+    return serializer.dumps({
+        'destination': destination,
+        'timestamp': str(datetime.utcnow()),
+        'user': {
+            'id': current_user.id,
+            'email': current_user.email,
+            'email_verified': current_user.email_verified
+        }
+    })
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

@@ -267,6 +267,28 @@ def test_email():
         return "Email sent successfully!"
     return "Error sending email"
 
+@app.route('/api/verify_token', methods=['POST'])
+def verify_token():
+    data = request.get_json()
+    token = data.get('token')
+    app_name = data.get('app_name')
+    
+    if not token or not app_name:
+        return jsonify({'valid': False, 'error': 'Missing token or app_name'}), 400
+    
+    try:
+        s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        data = s.loads(token, max_age=3600)  # Token expires after 1 hour
+        
+        if data.get('destination') != app_name:
+            return jsonify({'valid': False, 'error': 'Invalid destination'}), 400
+            
+        return jsonify({'valid': True, 'data': data})
+    except SignatureExpired:
+        return jsonify({'valid': False, 'error': 'Token expired'}), 400
+    except Exception as e:
+        return jsonify({'valid': False, 'error': str(e)}), 400
+
 # Create the database tables
 def init_db():
     try:

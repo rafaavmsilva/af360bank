@@ -136,6 +136,13 @@ def register():
             flash('All fields are required')
             return redirect(url_for('register'))
 
+        # Email domain validation
+        allowed_domains = ['af360.com.br', 'afcredito.com.br']
+        email_domain = email.split('@')[-1].lower()
+        if email_domain not in allowed_domains:
+            flash('Only @af360.com.br and @afcredito.com.br email addresses are allowed')
+            return redirect(url_for('register'))
+
         # Password validation
         is_valid, message = validate_password(password)
         if not is_valid:

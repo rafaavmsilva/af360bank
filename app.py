@@ -9,12 +9,21 @@ from dotenv import load_dotenv
 import re
 import secrets
 from datetime import datetime
+from auth_client import AuthClient
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
+
+# Initialize AuthClient with app_name
+auth = AuthClient(
+    app_name="AF360Bank",
+    base_url=os.getenv('AUTH_BASE_URL'),
+    client_id=os.getenv('AUTH_CLIENT_ID'),
+    client_secret=os.getenv('AUTH_CLIENT_SECRET')
+)
 
 # Database configuration
 DATABASE_URL = os.getenv('DATABASE_URL')

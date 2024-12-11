@@ -6,6 +6,8 @@ __pycache__/
 env/
 venv/
 .env
-*.db
 .DS_Store
-instance/
+
+# Keep track of database schema but ignore the data
+instance/*
+!instance/.gitkeep

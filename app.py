@@ -277,23 +277,17 @@ def test_email():
 
 @app.route('/api/verify_token', methods=['POST'])
 def verify_token():
-    data = request.get_json()
-    token = data.get('token')
-    app_name = data.get('app_name')
-    
-    if not token or not app_name:
-        return jsonify({'valid': False, 'error': 'Missing token or app_name'}), 400
-    
+    token = request.json.get('token')
+    if not token:
+        return jsonify({'valid': False, 'error': 'No token provided'}), 400
+
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     try:
-        s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-        data = s.loads(token, max_age=3600)  # Token expires after 1 hour
-        
-        if data.get('destination') != app_name:
-            return jsonify({'valid': False, 'error': 'Invalid destination'}), 400
-            
-        return jsonify({'valid': True, 'data': data})
-    except SignatureExpired:
-        return jsonify({'valid': False, 'error': 'Token expired'}), 400
+        data = serializer.loads(token, max_age=3600)  # Token expires after 1 hour
+        return jsonify({
+            'valid': True,
+            'data': data
+        })
     except Exception as e:
         return jsonify({'valid': False, 'error': str(e)}), 400
 

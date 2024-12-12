@@ -10,6 +10,8 @@ import re
 import secrets
 from datetime import datetime
 from auth_client import AuthClient
+from functools import wraps
+from flask_migrate import Migrate
 
 # Load environment variables
 load_dotenv()
@@ -30,6 +32,9 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL or 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Email configuration with detailed error handling
 def configure_email():
@@ -53,9 +58,7 @@ def configure_email():
 if not configure_email():
     print("Warning: Email configuration failed!")
 
-# Initialize extensions
-db = SQLAlchemy(app)
-mail = Mail(app)
+# Initialize LoginManager
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'  # Specify the login view
@@ -67,9 +70,19 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(120), nullable=False)
     email_verified = db.Column(db.Boolean, default=False)
     verification_token = db.Column(db.String(120), unique=True)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_comissoes_admin = db.Column(db.Boolean, default=False)
+    is_financeiro_admin = db.Column(db.Boolean, default=False)
 
     def get_id(self):
         return str(self.id)
+
+    def get_permissions(self):
+        return {
+            'admin': self.is_admin,
+            'comissoes': self.is_comissoes_admin,
+            'financeiro': self.is_financeiro_admin
+        }
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -124,6 +137,15 @@ def generate_redirect_token(destination):
             'email_verified': current_user.email_verified
         }
     })
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            flash('You need to be an admin to access this page.', 'danger')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -277,6 +299,42 @@ def redirect_to_project(project):
         token = generate_redirect_token('financeiro')
         return redirect(f'{financeiro_url}/auth?token={token}')
     return redirect(url_for('index'))
+
+@app.route('/admin')
+@login_required
+@admin_required
+def admin_panel():
+    users = User.query.all()
+    return render_template('admin_panel.html', users=users)
+
+@app.route('/admin/toggle-permission/<int:user_id>/<permission>', methods=['POST'])
+@login_required
+@admin_required
+def toggle_permission(user_id, permission):
+    user = User.query.get_or_404(user_id)
+    
+    # Prevent self-demotion for the last admin
+    if permission == 'admin' and user.id == current_user.id:
+        admin_count = User.query.filter_by(is_admin=True).count()
+        if admin_count <= 1:
+            flash('Cannot remove admin status from the last admin user.', 'danger')
+            return redirect(url_for('admin_panel'))
+    
+    if permission == 'admin':
+        user.is_admin = not user.is_admin
+    elif permission == 'comissoes':
+        user.is_comissoes_admin = not user.is_comissoes_admin
+    elif permission == 'financeiro':
+        user.is_financeiro_admin = not user.is_financeiro_admin
+    
+    try:
+        db.session.commit()
+        flash(f'Successfully updated permissions for {user.email}', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while updating permissions.', 'danger')
+    
+    return redirect(url_for('admin_panel'))
 
 @app.route('/')
 @login_required

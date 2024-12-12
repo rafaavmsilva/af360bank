@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Admin Panel - User Management</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Permissions</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.email_verified %}
+                            <span class="badge bg-success">Verified</span>
+                        {% else %}
+                            <span class="badge bg-warning">Unverified</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_admin %}
+                            <span class="badge bg-primary">Admin</span>
+                        {% endif %}
+                        {% if user.is_comissoes_admin %}
+                            <span class="badge bg-info">Comissões Admin</span>
+                        {% endif %}
+                        {% if user.is_financeiro_admin %}
+                            <span class="badge bg-secondary">Financeiro Admin</span>
+                        {% endif %}
+                        {% if not user.is_admin and not user.is_comissoes_admin and not user.is_financeiro_admin %}
+                            <span class="badge bg-light text-dark">Normal User</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                Manage Permissions
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form action="{{ url_for('toggle_permission', user_id=user.id, permission='admin') }}" method="POST" class="d-inline">
+                                        <button type="submit" class="dropdown-item">
+                                            {% if user.is_admin %}Remove{% else %}Add{% endif %} Admin
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form action="{{ url_for('toggle_permission', user_id=user.id, permission='comissoes') }}" method="POST" class="d-inline">
+                                        <button type="submit" class="dropdown-item">
+                                            {% if user.is_comissoes_admin %}Remove{% else %}Add{% endif %} Comissões Admin
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form action="{{ url_for('toggle_permission', user_id=user.id, permission='financeiro') }}" method="POST" class="d-inline">
+                                        <button type="submit" class="dropdown-item">
+                                            {% if user.is_financeiro_admin %}Remove{% else %}Add{% endif %} Financeiro Admin
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

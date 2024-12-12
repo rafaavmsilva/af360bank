@@ -61,7 +61,10 @@ def migrate_data():
                 email VARCHAR(120) UNIQUE NOT NULL,
                 password_hash VARCHAR(120) NOT NULL,
                 email_verified BOOLEAN DEFAULT FALSE,
-                verification_token VARCHAR(120) UNIQUE
+                verification_token VARCHAR(120) UNIQUE,
+                is_admin BOOLEAN DEFAULT FALSE,
+                is_comissoes_admin BOOLEAN DEFAULT FALSE,
+                is_financeiro_admin BOOLEAN DEFAULT FALSE
             )
         """)
 

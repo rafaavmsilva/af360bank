@@ -374,12 +374,20 @@ def verify_token():
 
 # Create the database tables
 def init_db():
-    try:
-        with app.app_context():
-            db.create_all()
-            print("Database tables created successfully")
-    except Exception as e:
-        print(f"Error creating database tables: {str(e)}")
+    with app.app_context():
+        # Create all tables
+        db.create_all()
+        
+        # Add missing columns if they don't exist
+        try:
+            with db.engine.connect() as conn:
+                conn.execute('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE')
+                conn.execute('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_comissoes_admin BOOLEAN DEFAULT FALSE')
+                conn.execute('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_financeiro_admin BOOLEAN DEFAULT FALSE')
+                conn.commit()
+        except Exception as e:
+            print(f"Migration error: {e}")
+            # Continue even if there's an error, as the columns might already exist
 
 if __name__ == '__main__':
     # Force HTTPS

@@ -12,6 +12,7 @@ from datetime import datetime
 from auth_client import AuthClient
 from functools import wraps
 from flask_migrate import Migrate
+from sqlalchemy import text
 
 # Load environment variables
 load_dotenv()
@@ -36,27 +37,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# Email configuration with detailed error handling
-def configure_email():
+# Ensure database and tables exist
+with app.app_context():
+    # Create all tables
+    db.create_all()
+    
+    # Add missing columns if they don't exist
     try:
-        app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-        app.config['MAIL_PORT'] = 587
-        app.config['MAIL_USE_TLS'] = True
-        app.config['MAIL_USE_SSL'] = False
-        app.config['MAIL_USERNAME'] = 'rafaavmsilva3@gmail.com'
-        app.config['MAIL_PASSWORD'] = 'erfbeqeyfcqcvwwl'
-        app.config['MAIL_DEFAULT_SENDER'] = ('AF360 Bank', 'rafaavmsilva3@gmail.com')
-        app.config['MAIL_MAX_EMAILS'] = None
-        app.config['MAIL_ASCII_ATTACHMENTS'] = False
-        
-        return True
+        with db.engine.connect() as conn:
+            conn.execute(text('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE'))
+            conn.execute(text('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_comissoes_admin BOOLEAN DEFAULT FALSE'))
+            conn.execute(text('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_financeiro_admin BOOLEAN DEFAULT FALSE'))
+            conn.commit()
     except Exception as e:
-        print(f"Error configuring email: {str(e)}")
-        return False
-
-# Configure email
-if not configure_email():
-    print("Warning: Email configuration failed!")
+        print(f"Migration error: {e}")
 
 # Initialize LoginManager
 login_manager = LoginManager()
@@ -372,22 +366,29 @@ def verify_token():
     except Exception as e:
         return jsonify({'valid': False, 'error': str(e)}), 400
 
-# Create the database tables
-def init_db():
-    with app.app_context():
-        # Create all tables
-        db.create_all()
+# Email configuration with detailed error handling
+def configure_email():
+    try:
+        app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+        app.config['MAIL_PORT'] = 587
+        app.config['MAIL_USE_TLS'] = True
+        app.config['MAIL_USE_SSL'] = False
+        app.config['MAIL_USERNAME'] = 'rafaavmsilva3@gmail.com'
+        app.config['MAIL_PASSWORD'] = 'erfbeqeyfcqcvwwl'
+        app.config['MAIL_DEFAULT_SENDER'] = ('AF360 Bank', 'rafaavmsilva3@gmail.com')
+        app.config['MAIL_MAX_EMAILS'] = None
+        app.config['MAIL_ASCII_ATTACHMENTS'] = False
         
-        # Add missing columns if they don't exist
-        try:
-            with db.engine.connect() as conn:
-                conn.execute('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE')
-                conn.execute('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_comissoes_admin BOOLEAN DEFAULT FALSE')
-                conn.execute('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_financeiro_admin BOOLEAN DEFAULT FALSE')
-                conn.commit()
-        except Exception as e:
-            print(f"Migration error: {e}")
-            # Continue even if there's an error, as the columns might already exist
+        return True
+    except Exception as e:
+        print(f"Error configuring email: {str(e)}")
+        return False
+
+# Configure email
+if not configure_email():
+    print("Warning: Email configuration failed!")
+
+mail = Mail(app)
 
 if __name__ == '__main__':
     # Force HTTPS
@@ -398,5 +399,4 @@ if __name__ == '__main__':
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     
-    init_db()  # Initialize the database before running the app
     app.run(debug=True, ssl_context='adhoc')

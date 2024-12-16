@@ -288,9 +288,11 @@ def redirect_to_project(project):
     if is_local:
         comissoes_url = 'http://127.0.0.1:5001'
         financeiro_url = 'http://127.0.0.1:5002'
+        inss_url = 'http://127.0.0.1:5003'
     else:
         comissoes_url = 'https://sistema-de-comissoes.onrender.com'
         financeiro_url = 'https://projeto-financeiro.onrender.com'
+        inss_url = 'https://banco-af360bank.onrender.com'
     
     if project == 'comissoes':
         token = generate_redirect_token('comissoes')
@@ -298,6 +300,9 @@ def redirect_to_project(project):
     elif project == 'financeiro':
         token = generate_redirect_token('financeiro')
         return redirect(f'{financeiro_url}/auth?token={token}')
+    elif project == 'inss':
+        token = generate_redirect_token('inss')
+        return redirect(f'{inss_url}/auth?token={token}')
     return redirect(url_for('index'))
 
 @app.route('/admin')

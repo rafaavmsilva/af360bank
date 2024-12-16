@@ -24,6 +24,11 @@
                 <h2>Financeiro</h2>
                 <p>Acesse o sistema financeiro</p>
             </a>
+            <a href="{{ url_for('redirect_to_project', project='inss') }}" class="project-card">
+                <div class="icon">🏛️</div>
+                <h2>Sistema INSS</h2>
+                <p>Acesse o sistema INSS</p>
+            </a>
         </div>
         <div class="logout-container">
             <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>

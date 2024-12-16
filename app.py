@@ -335,6 +335,22 @@ def toggle_permission(user_id, permission):
     
     return redirect(url_for('admin_panel'))
 
+@app.route('/auth')
+def auth():
+    token = request.args.get('token')
+    if not token:
+        flash('No authentication token provided', 'error')
+        return redirect(url_for('login'))
+
+    verification = auth.verify_token(token)
+    if not verification or not verification.get('valid'):
+        flash('Invalid or expired authentication token', 'error')
+        return redirect(url_for('login'))
+
+    # Store the token in session
+    session['token'] = token
+    return redirect(url_for('index'))
+
 @app.route('/')
 @login_required
 def index():

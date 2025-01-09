@@ -384,6 +384,8 @@ def forgot_password():
                 flash('Error sending password reset email. Please try again later.')
         else:
             flash('Email not found')
+        
+        return redirect(url_for('login'))
             
     return render_template('forgot_password.html')
 

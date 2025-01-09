@@ -366,6 +366,56 @@ def test_email():
         return "Email sent successfully!"
     return "Error sending email"
 
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+            token = serializer.dumps(email, salt='password-reset')
+            reset_url = url_for('reset_password', token=token, _external=True)
+            template = render_template('reset_password_email.html', reset_url=reset_url)
+            
+            if try_send_email("Reset Your Password", email, template):
+                flash('Password reset email sent! Please check your inbox.')
+            else:
+                flash('Error sending password reset email. Please try again later.')
+        else:
+            flash('Email not found')
+            
+    return render_template('forgot_password.html')
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        email = serializer.loads(token, salt='password-reset', max_age=3600)
+    except Exception as e:
+        flash('Invalid or expired password reset token')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        password = request.form.get('password')
+        is_valid, message = validate_password(password)
+        
+        if not is_valid:
+            flash(message)
+            return redirect(url_for('reset_password', token=token))
+        
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password_hash = generate_password_hash(password)
+            db.session.commit()
+            flash('Password reset successful! You can now log in.')
+            return redirect(url_for('login'))
+        else:
+            flash('User not found')
+            return redirect(url_for('login'))
+    
+    return render_template('reset_password.html')
+
 @app.route('/api/verify_token', methods=['POST'])
 def verify_token():
     token = request.json.get('token')

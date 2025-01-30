@@ -284,7 +284,7 @@ def redirect_to_project(project):
         financeiro_url = 'http://127.0.0.1:5002'
         inss_url = 'http://127.0.0.1:5003'
     else:
-        comissoes_url = 'https://sistema-de-comissoes.onrender.com'
+        comissoes_url = 'https://comissoes-af360bank.onrender.com'
         financeiro_url = 'https://projeto-financeiro.onrender.com'
         inss_url = 'https://banco-af360bank.onrender.com'
     
